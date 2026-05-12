@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logistics OptiAgent | Dashboard</title>
+    <link rel="stylesheet" href="index.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Logistics OptiAgent</h1>
+            <p>IA Model-Based | Optimización de Flotas y Combustible</p>
+        </header>
+
+        <section class="glass-card">
+            <header style="margin-bottom: 2rem;">
+                <h2 style="font-size: 1.5rem; color: var(--accent-cyan);">Panel de Carga (Mecánico)</h2>
+                <p style="font-size: 0.9rem; color: var(--text-gray);">Sube el reporte PDF del escaneo para que el administrador lo analice.</p>
+            </header>
+
+            <div class="upload-section" id="upload-container">
+                <div class="drop-zone" id="drop-zone">
+                    <i class="fas fa-file-pdf"></i>
+                    <p>Arrastra tu reporte DDEC / Nexiq o haz clic para subir</p>
+                    <input type="file" id="file-input" hidden accept=".pdf">
+                </div>
+                
+                <div class="notes-container" style="margin-top: 1.5rem; width: 100%;">
+                    <label for="unit-id" style="color: var(--accent-cyan); display: block; margin-bottom: 0.5rem; font-weight: bold;">ID de la Unidad / Camión:</label>
+                    <input type="text" id="unit-id" placeholder="Ej: UNID06 o Camión 4" required style="width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--accent-cyan); border-radius: 12px; color: white; padding: 1rem; margin-bottom: 1rem; font-family: inherit; font-size: 1rem;">
+                    
+                    <label for="mechanic-notes" style="color: var(--text-gray); display: block; margin-bottom: 0.5rem;">Comentarios del Mecánico:</label>
+                    <textarea id="mechanic-notes" placeholder="Ej: Falla en inyector detectable, revisión de frenos pendiente..." style="width: 100%; min-height: 100px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; color: white; padding: 1rem; font-family: inherit; resize: vertical; font-size: 1rem;"></textarea>
+                    <button id="upload-btn" class="upload-btn" style="margin-top: 1.5rem; width: 100%; padding: 1rem; border-radius: 12px; border: none; background: var(--accent-cyan); color: var(--bg-dark); font-weight: 800; cursor: pointer; transition: 0.3s; font-size: 1rem; text-transform: uppercase; letter-spacing: 1px;">Guardar Reporte Técnico</button>
+                </div>
+            </div>
+
+            <div class="loading" id="loading" style="display: none;">
+                <div class="spinner"></div>
+                <p style="margin-top: 1rem; color: var(--text-gray);" id="loading-text">Guardando reporte...</p>
+            </div>
+        </section>
+
+        <footer style="text-align: center; margin-top: 2rem;">
+            <a href="admin.html" style="color: var(--text-gray); text-decoration: none; font-size: 0.9rem; opacity: 0.6; transition: 0.3s;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.6">Ir al Panel de Administración →</a>
+        </footer>
+    </div>
+
+    <script src="upload.js"></script>
+</body>
+</html>

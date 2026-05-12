@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | Logistics OptiAgent</title>
+    <link rel="stylesheet" href="index.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Admin Dashboard</h1>
+            <p>Control de Flota y Análisis de Reportes Técnicos</p>
+        </header>
+
+        <section class="glass-card">
+            <header style="margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <h2 style="font-size: 1.5rem; color: var(--accent-cyan);">Historial de Reportes</h2>
+                    <p style="font-size: 0.9rem; color: var(--text-gray);">Visualiza y analiza los reportes subidos por los mecánicos.</p>
+                </div>
+                <button onclick="location.reload()" style="background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: white; padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer;">
+                    <i class="fas fa-sync-alt"></i> Actualizar
+                </button>
+            </header>
+
+            <div id="loading" style="display: none; text-align: center; padding: 2rem;">
+                <div class="spinner"></div>
+                <p style="margin-top: 1rem; color: var(--text-gray);" id="loading-text">Analizando con Claude...</p>
+            </div>
+
+            <div class="history-list" id="history-list">
+                <p style="color: var(--text-gray); font-style: italic;">Cargando historial...</p>
+            </div>
+        </section>
+
+        <div class="dashboard-grid" id="dashboard" style="display: none;">
+            <!-- Metric Cards -->
+            <div class="metric-card">
+                <h3>Consumo de Combustible</h3>
+                <div class="value-container">
+                    <span class="value" id="val-consumo">--</span>
+                    <span class="unit" id="unit-consumo">MPG</span>
+                </div>
+                <p class="description" id="desc-consumo">Análisis de eficiencia energética basado en el reporte.</p>
+            </div>
+
+            <div class="metric-card">
+                <h3>Tiempo Ralentí (Idle)</h3>
+                <div class="value-container">
+                    <span class="value" id="val-ralenti">--</span>
+                    <span class="unit" id="unit-ralenti">min</span>
+                </div>
+                <p class="description" id="desc-ralenti">Detección de ineficiencias operativas.</p>
+            </div>
+
+            <div class="metric-card">
+                <h3>Seguridad de Ruta</h3>
+                <div class="value-container" style="display: flex; gap: 1rem;">
+                    <div>
+                        <span class="value" id="val-frenados">0</span>
+                        <span class="unit">Frenados</span>
+                    </div>
+                    <div>
+                        <span class="value" id="val-excesos">0</span>
+                        <span class="unit">Excesos</span>
+                    </div>
+                </div>
+                <p class="description" id="desc-eventos">Resumen de eventos críticos detectados.</p>
+            </div>
+
+            <!-- Recommendations -->
+            <div class="glass-card recommendations">
+                <h3>Recomendaciones Estratégicas</h3>
+                <ul id="recommendations-list">
+                    <!-- Dynamic List -->
+                </ul>
+            </div>
+
+            <!-- Patterns -->
+            <div class="glass-card patterns" style="grid-column: 1 / -1;">
+                <h3>Patrones Detectados</h3>
+                <p class="description" id="patterns-desc" style="font-style: italic; color: var(--accent-cyan);"></p>
+            </div>
+
+            <!-- Gráfica Contextual por Unidad -->
+            <div class="glass-card" style="grid-column: 1 / -1; display: none;" id="chart-section">
+                <header style="margin-bottom: 1rem;">
+                    <h3 style="color: var(--accent-cyan); font-size: 1.2rem;">Historial de Desempeño: <span id="chart-unit-name">Esta Unidad</span></h3>
+                    <p style="font-size: 0.8rem; color: var(--text-gray);">Comparativa de los últimos viajes de este mismo camión.</p>
+                </header>
+                <div style="width: 100%; height: 300px; position: relative;">
+                    <canvas id="historyChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <footer style="text-align: center; margin-top: 2rem;">
+            <a href="index.html" style="color: var(--text-gray); text-decoration: none; font-size: 0.9rem; opacity: 0.6; transition: 0.3s;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.6">← Volver al Panel de Carga</a>
+        </footer>
+    </div>
+
+    <!-- Floating Chatbot -->
+    <button id="chatbot-toggle" style="position: fixed; bottom: 20px; right: 20px; width: 60px; height: 60px; border-radius: 50%; background: var(--accent-cyan); color: var(--bg-dark); border: none; font-size: 24px; cursor: pointer; box-shadow: 0 4px 15px rgba(0, 240, 255, 0.4); transition: 0.3s; z-index: 1000;">
+        <i class="fas fa-robot"></i>
+    </button>
+
+    <div id="chatbot-window" class="glass-card" style="display: none; position: fixed; bottom: 90px; right: 20px; width: 350px; height: 500px; flex-direction: column; z-index: 1000; padding: 0; overflow: hidden; border: 1px solid var(--accent-cyan);">
+        <header style="background: rgba(0, 240, 255, 0.1); padding: 1rem; border-bottom: 1px solid rgba(0, 240, 255, 0.2);">
+            <h3 style="margin: 0; color: var(--accent-cyan); font-size: 1.1rem;"><i class="fas fa-robot"></i> Consultor Logístico IA</h3>
+        </header>
+        
+        <div id="chat-messages" style="flex: 1; overflow-y: auto; padding: 1rem; display: flex; flex-direction: column; gap: 1rem;">
+            <div style="background: rgba(255,255,255,0.1); padding: 0.8rem; border-radius: 12px; max-width: 85%; align-self: flex-start; color: white; font-size: 0.9rem;">
+                Hola. El sistema está listo para consultas operativas sobre la flota.
+            </div>
+        </div>
+
+        <div style="padding: 1rem; border-top: 1px solid var(--glass-border); display: flex; gap: 0.5rem; background: rgba(0,0,0,0.2);">
+            <input type="text" id="chat-input" placeholder="Consulte aquí..." style="flex: 1; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: white; padding: 0.5rem; border-radius: 8px; outline: none; font-family: inherit;">
+            <button id="chat-send" style="background: var(--accent-cyan); color: var(--bg-dark); border: none; padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer; font-weight: bold;"><i class="fas fa-paper-plane"></i></button>
+        </div>
+    </div>
+
+    <script src="admin.js"></script>
+</body>
+</html>
